@@ -51,7 +51,7 @@ namespace modules
 		return entry;
 	}
 
-	DATA_ENTRY find_section(DATA_ENTRY module, const char* section_name)
+	DATA_ENTRY get_section(DATA_ENTRY module, const char* section_name)
 	{
 		PIMAGE_DOS_HEADER dos_header = (PIMAGE_DOS_HEADER)module.base;
 		PIMAGE_NT_HEADERS nt_headers = (PIMAGE_NT_HEADERS)(module.base + dos_header->e_lfanew);

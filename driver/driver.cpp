@@ -9,6 +9,13 @@ EXTERN_C NTSTATUS Entry(void* param1, void* param2)
 		return STATUS_UNSUCCESSFUL;
 	}
 
+	const auto text_section = modules::get_section(module, ".text");
+	if (!text_section)
+	{
+		printf("Failed to get text section\n");
+		return STATUS_UNSUCCESSFUL;
+	}
+
 	const auto cr3 = physical::cr3::GetFromBase(module.base);
 	if (!cr3)
 	{
@@ -17,17 +24,19 @@ EXTERN_C NTSTATUS Entry(void* param1, void* param2)
 	}
 
 	printf("cr3: 0x%llx\n", cr3);
+	
+	uint64 buffer = 0;
+	size_t bytes = 0;
 
-	uint16 buffer = 0;
-	size_t read = 0;
-	NTSTATUS status = physical::ReadMemory(cr3, reinterpret_cast<void*>(module.base), &buffer, sizeof(buffer), &read);
+	const auto status = physical::ReadMemory(cr3, reinterpret_cast<void*>(text_section.base), &buffer, sizeof(buffer), &bytes);
 	if (!NT_SUCCESS(status))
 	{
 		printf("Failed to read memory\n");
 		return STATUS_UNSUCCESSFUL;
 	}
 
-	printf("First short: 0x%x\n", buffer);
+	printf("Read %d bytes\n", bytes);
+	printf("Buffer: 0x%llx\n", buffer);
 
 	return STATUS_SUCCESS;
 }

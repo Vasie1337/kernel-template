@@ -4,15 +4,14 @@
     <ClCompile Include="driver.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="impl\crt.hpp" />
+    <ClInclude Include="kernel\crt.hpp" />
     <ClInclude Include="include.hpp" />
     <ClInclude Include="defs.hpp" />
     <ClInclude Include="kernel\modules.hpp" />
-    <ClInclude Include="impl\scanner.hpp" />
-    <ClInclude Include="impl\nt.hpp" />
-    <ClInclude Include="kernel\ctx.hpp" />
-    <ClInclude Include="physical\physical.hpp" />
-    <ClInclude Include="physical\cr3.hpp" />
+    <ClInclude Include="kernel\scanner.hpp" />
+    <ClInclude Include="kernel\nt.hpp" />
+    <ClInclude Include="kernel\physical\physical.hpp" />
+    <ClInclude Include="kernel\physical\cr3.hpp" />
     <ClInclude Include="comm\handler.hpp" />
   </ItemGroup>
 </Project>
