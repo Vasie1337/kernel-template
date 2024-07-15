@@ -2,21 +2,23 @@
 
 EXTERN_C NTSTATUS Entry(void* param1, void* param2)
 {
-	const auto module = modules::get_kernel_module("ntoskrnl.exe");
-	if (!module)
-	{
-		printf("Failed to get kernel module\n");
+	PEPROCESS process = 0;
+	if (PsLookupProcessByProcessId((HANDLE)5672, &process) != STATUS_SUCCESS) {
 		return STATUS_UNSUCCESSFUL;
 	}
 
-	const auto text_section = modules::get_section(module, ".text");
-	if (!text_section)
+	printf("Process: 0x%llx\n", process);
+
+	uintptr_t base = (uintptr_t)PsGetProcessSectionBaseAddress(process);
+	if (!base)
 	{
-		printf("Failed to get text section\n");
+		printf("Failed to get base\n");
 		return STATUS_UNSUCCESSFUL;
 	}
 
-	const auto cr3 = physical::cr3::GetFromBase(module.base);
+	printf("Base: 0x%llx\n", base);
+
+	const auto cr3 = physical::cr3::GetFromBase(base);
 	if (!cr3)
 	{
 		printf("Failed to get cr3\n");
@@ -25,10 +27,10 @@ EXTERN_C NTSTATUS Entry(void* param1, void* param2)
 
 	printf("cr3: 0x%llx\n", cr3);
 	
-	uint64 buffer = 0;
+	short buffer = 0;
 	size_t bytes = 0;
 
-	const auto status = physical::ReadMemory(cr3, reinterpret_cast<void*>(text_section.base), &buffer, sizeof(buffer), &bytes);
+	const auto status = physical::ReadMemory(cr3, reinterpret_cast<void*>(base), &buffer, sizeof(buffer), &bytes);
 	if (!NT_SUCCESS(status))
 	{
 		printf("Failed to read memory\n");
@@ -36,7 +38,7 @@ EXTERN_C NTSTATUS Entry(void* param1, void* param2)
 	}
 
 	printf("Read %d bytes\n", bytes);
-	printf("Buffer: 0x%llx\n", buffer);
+	printf("Buffer: %lx\n", buffer);
 
 	return STATUS_SUCCESS;
 }
